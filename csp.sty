@@ -1,0 +1,544 @@
+% -- csp.sty version 3 -------------------------------------------------
+
+% version 2 -> version 3: fixed problem with displayed lines, made
+% ``no lines'' the default, and changed the option name to ``lines'';
+% dropped the \c for ``csptab'' command, using \t instead; removed
+% `declaration' environment - too confusing; colors revised to match
+% colormap in sepslide.cls; latexsym now loaded in zed.sty
+
+\def\fileversion{3.03} \def\filedate{2004/04/14}
+
+\NeedsTeXFormat{LaTeX2e}
+
+\ProvidesPackage{csp}[{\filedate\space\fileversion\space csp package}]
+
+% -- options -----------------------------------------------------------
+
+\newif\if@cm@ \@cm@false
+\newif\if@lucida@ \@lucida@false
+\newif\if@times@ \@times@false
+\newif\if@color@ \@color@false
+\newif\if@zed@ \@zed@false
+\newif\if@csp@ \@csp@false
+\newif\if@lines@ \@lines@false
+\newif\if@keywords@ \@keywords@false
+
+\DeclareOption{cm}{\@cm@true\@lucida@false\@times@false}
+\DeclareOption{lucida}{\@cm@false\@lucida@true\@times@false}
+\DeclareOption{times}{\@cm@false\@lucida@false\@times@true}
+\DeclareOption{color}{\@color@true}
+\DeclareOption{zed}{\@zed@true}
+\DeclareOption{csp}{\@csp@true}
+\DeclareOption{lines}{\@lines@true}
+\DeclareOption{keywords}{\@keywords@true}
+
+\ExecuteOptions{cm} \ProcessOptions
+
+\@ifpackageloaded{zed}{\relax}{%
+  \RequirePackageWithOptions{zed}}
+
+% -- color -------------------------------------------------------------
+
+\if@color@
+  \definecolor{CSPBoxColor}{rgb}{0.30,0.80,0.00}
+  \definecolor{MetaColor}{rgb}{0.85,0.55,0.00}
+  \definecolor{CSPColor}{rgb}{0.55,0.00,0.85}
+\fi
+
+% -- symbols -----------------------------------------------------------
+
+\if@cm@
+  \let\Box\undefined
+  \DeclareMathSymbol\tick{\mathord}{AMSa}{"58}
+  \DeclareMathSymbol{\Box}{\mathord}{lasy}{"32}
+  \def\lchan@sym{{\{}\mkern-3.5mu{|}}
+  \def\rchan@sym{{|}\mkern-3.5mu{\}}}
+  \def\lseq@sym{\langle}
+  \def\rseq@sym{\rangle}
+  \def\lren@sym{[}
+  \def\rren@sym{]}
+  \def\llink@sym{\langle\mkern-4mu\langle}
+  \def\rlink@sym{\rangle\mkern-4mu\rangle}
+  \let\then@sym\rightarrow
+  \let\parallel@sym\parallel 
+  \let\cpar@sym\parallel
+  \def\guard@sym{\&}
+  \let\becomes@sym\leftarrow
+  \let\linksto@sym\leftrightarrow
+  \let\extchoice@sym\Box
+  \let\intchoice@sym\sqcap
+  \let\interrupt@sym\triangle
+  \let\timeout@sym\triangleright
+  \def\lpar@sym{[}
+  \def\rpar@sym{]}
+  \def\lshare@sym{{[}{|}}
+  \def\rshare@sym{{|}{]}}
+  \def\interleave@sym{{|}\mkern-2mu{|}\mkern-2mu{|}}
+  \let\circ@sym=\circ
+  \let\hide@sym\backslash
+  \def \ldbrack{{[}\mkern-3mu{[}}
+  \def \rdbrack{{]}\mkern-3mu{]}}
+\fi
+
+\if@times@
+  \let\bar@sym=\mid
+  \let\hide@sym=\backslash
+  \DeclareMathSymbol{[}{\mathopen}{symbols}{84}
+  \DeclareMathSymbol{]}{\mathclose}{symbols}{85}
+  \let\tick=\surd
+  \def\lchan@sym{{\{}\mkern-4mu{|}}
+  \def\rchan@sym{{|}\mkern-4mu{\}}}
+  \def\lseq@sym{\langle}
+  \def\rseq@sym{\rangle}
+  \def\lren@sym{[}
+  \def\rren@sym{]}
+  \def\llink@sym{\langle\mkern-4mu\langle}
+  \def\rlink@sym{\rangle\mkern-4mu\rangle}
+  \def\then@sym{\simple@enlarge{\rightarrow}}
+  \def\parallel@sym{\bar@sym\bar@sym}
+  \def\guard@sym{\&}
+  \def\becomes@sym{\simple@enlarge{\leftarrow}}
+  \def\linksto@sym{\simple@enlarge{\leftrightarrow}}
+  \def\extchoice@sym{%
+    \setbox0=\hbox{$\sqcap$}\rlap{\hbox to \wd0{\hss\vrule width 0.5em
+        height 0.1ex\hss}}\box0}
+  \let\intchoice@sym\sqcap
+  \let\interrupt@sym\triangle
+  \let\timeout@sym\triangleright
+  \let\cpar@sym\parallel
+  \def\lpar@sym{[}
+  \def\rpar@sym{]}
+  \def\lshare@sym{{[}{\bar@sym}}
+  \def\rshare@sym{{\bar@sym}{]}}
+  \def\interleave@sym{\bar@sym\bar@sym\bar@sym}
+  \let\circ@sym=\circ
+  \def \ldbrack{{[}\mkern-3mu{[}}
+  \def \rdbrack{{]}\mkern-3mu{]}}
+\fi
+
+\if@lucida@
+  \DeclareMathSymbol{\tick}{0}{arrows}{"AC}
+  \DeclareSymbolFont{roman}{\encodingdefault}{\rmdefault}{m}{n}
+  \DeclareMathSymbol{\bar@sym}{\mathord}{roman}{124}
+  \DeclareMathSymbol{\hide@sym}{\mathord}{roman}{092}
+  \def\lchan@sym{{\{}\mkern-5mu{|}}
+  \def\rchan@sym{{|}\mkern-5mu{\}}}
+  \def\lseq@sym{\langle}
+  \def\rseq@sym{\rangle}
+  \def\lren@sym{[}
+  \def\rren@sym{]}
+  \def\llink@sym{\langle\mkern-4mu\langle}
+  \def\rlink@sym{\rangle\mkern-4mu\rangle}
+  \def\then@sym{\simple@enlarge{\rightarrow}}
+  \def\parallel@sym{\bar@sym\bar@sym}
+  \def\guard@sym{\&}
+  \def\becomes@sym{\simple@enlarge{\leftarrow}}
+  \def\linksto@sym{\simple@enlarge{\leftrightarrow}}
+  \let\extchoice@sym\Box
+  \let\intchoice@sym\sqcap
+  \let\interrupt@sym\triangle
+  \let\timeout@sym\triangleright
+  \let\cpar@sym\parallel
+  \def\lpar@sym{[}
+  \def\rpar@sym{]}
+  \def\lshare@sym{{[}{\bar@sym}}
+  \def\rshare@sym{{\bar@sym}{]}}
+  \def\interleave@sym{\bar@sym\bar@sym\bar@sym}
+  \let\circ@sym=\circ
+\fi
+
+% -- mathematical sublanguage ------------------------------------------
+
+\def\Empty#1{#1 = \emptyset}
+\def\Nil#1{#1 = \nil}
+\def\elem#1{\mathrel{\in \ran} #1}
+\def\lseq{\mathord{\lseq@sym}}
+\def\lset{\{}
+\def\nil{\langle\rangle}
+\def\range{\upto}
+\def\rseq{\mathord{\rseq@sym}}
+\def\rset{\}}
+
+\def\bool{\mathbb{B}}
+
+\def\If{\mathrel{\mathrm{if}}}
+\def\Then{\mathrel{\mathrm{then}}}
+\def\Else{\mathrel{\mathrm{else}}}
+
+\def\lchan{\mathord{\lchan@sym}}
+\def\rchan{\mathord{\rchan@sym}}
+\def\productions{\mathop{\mathrm{productions}}}
+\def\extensions{\mathop{\mathrm{extensions}}}
+
+% -- process language --------------------------------------------------
+
+\def\Stop{\@ifnextchar[{\@Stop}{Stop}}
+\def\@Stop[#1]{Stop(#1)}
+
+\def\Skip{\@ifnextchar[{\@Skip}{Skip}}
+\def\@Skip[#1]{Skip(#1)}
+
+\def\Chaos{\@ifnextchar[{\@Chaos}{Chaos}}
+\def\@Chaos[#1]{Chaos(#1)}
+
+\def\aplus#1{{}^{{+}#1}}
+
+\def\then{\mathrel{\then@sym}}
+\def\intchoice{\mathrel{\intchoice@sym}}
+\def\extchoice{\mathrel{\extchoice@sym}}
+
+\def\guard{\mathrel{\guard@sym}}
+
+\def\lren{\mathord{\lren@sym}}
+\def\rren{\mathord{\rren@sym}}
+\def\becomes{\mathbin{\becomes@sym}}
+
+\def\rename{\@ifnextchar[{\@rename}{\@rename[]}}
+\def\@rename[#1]{\lren #1 \rren}
+
+\def\llink{\mathbin{\llink@sym}}
+\def\rlink{\mathbin{\rlink@sym}}
+\def\linksto{\mathbin{\linksto@sym}}
+
+\def\linking{\@ifnextchar[{\@linking}{\@linking[]}}
+\def\@linking[#1]{\llink #1 \rlink}
+
+\def\interrupt{\mathrel{\interrupt@sym}}
+\def\timeout{\mathrel{\timeout@sym}}
+
+\def\hide{\mathrel{\hide@sym}}
+
+\def\share{\@ifnextchar[{\@share}{\mathrel{\lshare \_ \rshare}}}
+\def\@share[#1]{%
+  \@ifnextchar[{\@@alphabetparallel[#1]}{\lshare #1 \rshare}}
+
+\def\parallel{\@ifnextchar[{\@share}{\mathrel{\parallel@sym}}}
+\def\@@alphabetparallel[#1][#2]{\lpar #1 \cpar #2 \rpar}
+
+\def\cpar{\mathbin{\cpar@sym}}
+\def\lpar{\mathbin{\lpar@sym}}
+\def\rpar{\mathbin{\rpar@sym}}
+\def\lshare{\mathbin{\lshare@sym}}
+\def\rshare{\mathbin{\rshare@sym}}
+
+\def\interleave{\mathrel{\interleave@sym}}
+
+% -- object language ---------------------------------------------------
+
+\def\@keyword#1{\mathsf{#1}}
+\def\Null{\mathord{\@keyword{null}}}
+\def\Extends{\mathrel{\@keyword{extends}}}
+\def\Sequential{\mathop{\@keyword{sequential}}}
+\def\Guarded{\mathop{\@keyword{guarded}}}
+\def\Concurrent{\mathop{\@keyword{concurrent}}}
+\def\Return{\mathop{\@keyword{return}}}
+
+\def\Proc{Proc}
+\def\Ref{Ref}
+
+\def\Call{\mathbin{.}}
+\def\ACall{\mathbin{.}}
+
+% -- indexed operators -------------------------------------------------
+
+\def\indexed@op#1{%
+  \mathop{\vcenter@enlarge{\mathstrut#1}}\nolimits}
+
+\def\indexed@bin#1{\mathbin{\vcenter@enlarge{\mathstrut#1}}}
+
+\def\circ{\mathrel{\circ@sym}}
+
+\def\Intchoice{\indexed@op{{\intchoice@sym}}}
+\def\Extchoice{\indexed@op{{\extchoice@sym}}}
+
+\def\Parallel{\@ifnextchar[{\@Parallel}{\indexed@op{{\parallel@sym}}}}
+\def\@Parallel[#1]{\indexed@bin{\lshare} #1 \indexed@bin{\rshare}}
+
+\def\Interleave{\indexed@op{{\interleave@sym}}}
+\def\Comp{\indexed@op{{\comp@sym\,}}}
+
+\def\Linking{\@ifnextchar[{\@Linking}{\@Linking[]}}
+\def\@Linking[#1]{\indexed@bin{\llink} #1 \indexed@bin{\rlink}}
+  
+% -- properties --------------------------------------------------------
+
+\def\Deterministic{%
+  \@ifnextchar[{%
+    \@deterministic}{%
+    \@deterministic[FD]}}
+\def\@deterministic[#1]{\mathop{\mathrm{deterministic}_{#1}~}}
+
+\def\DeadlockFree{%
+  \@ifnextchar[{%
+    \@deadlockfree}{%
+    \@deadlockfree[FD]}}
+\def\@deadlockfree[#1]{\mathop{\mathrm{deadlock\;free}_{#1}~}}
+
+\def\DivergenceFree{%
+  \mathop{\mathrm{divergence\;free}~}}
+
+\def\refinedby{%
+  \@ifnextchar[{\@refinedby}{\mathrel{\sqsubseteq}}}
+
+\def\@refinedby[#1]{\mathrel{\sqsubseteq_{#1}}}
+
+% -- displayed mathematics ---------------------------------------------
+
+\newdimen\cspindent \cspindent=\leftmargini
+\newdimen\cspleftsep \cspleftsep=1em
+\newdimen\csptab \csptab=1em
+
+\newskip\cspskip \cspskip=0.4\baselineskip plus0.1\baselineskip% 
+                                minus0.1\baselineskip%
+
+\def\@cspjot{0.5\cspskip}
+
+\newcount\intercsplinepenalty \intercsplinepenalty=10000%
+\newcount\preboxpenalty \preboxpenalty=0%
+
+\def\t#1{\afterassignment\@t\count@=#1}
+\def\@t{\hskip\count@\csptab}
+
+\newdimen\csprulewidth 
+\newcount\cspindentdepth
+
+\if@lines@
+  \csprulewidth=\arrayrulewidth
+  \cspindentdepth=1
+\else
+  \csprulewidth=0pt 
+  \cspindentdepth=0
+\fi
+
+\def\@cspnarrow{\advance\linewidth by-\cspindent}
+\def\@csprulefill{\leaders\hrule height\csprulewidth\hfill}
+
+\def\cspdisplayindent{\hskip\cspindentdepth\csptab}
+
+\def\csp@topline#1{\hbox to\linewidth{%
+    \color{CSPBoxColor}%
+    \vrule height\csprulewidth width\csprulewidth
+    \vrule height0pt depth\@cspjot width0pt
+    \@csprulefill\thinspace{\color{CSPColor}#1}\thinspace%
+    \hbox to\cspleftsep{\@csprulefill}}}
+
+\def\@cspline{\omit \vrule height\csprulewidth width\linewidth \cr}
+
+\def\@cspskip#1{\crcr \omit \vrule height#1 width\csprulewidth \cr}
+
+\newif\if@in@csp@display@ \@in@csp@display@false
+
+\def\@csp{\ifvmode\@cspleavevmode\fi$$
+  \advance\linewidth by-\cspindent
+  \advance\displayindent by\cspindent 
+  \def\\{\cr}%
+  \def\and{\crcr}%
+  \@in@csp@display@true
+  \let\par=\relax
+  \tabskip=0pt}
+
+\def\plainalso{\crcr\noalign{\penalty\interdisplaylinepenalty
+    \vskip\cspskip}} 
+\def\plainAlso{\crcr\noalign{\penalty\interdisplaylinepenalty
+    \vskip2\cspskip}} 
+
+\def\innerjot{\crcr\noalign{\penalty\interdisplaylinepenalty
+    \vskip\@cspjot}} 
+
+\def\inneralso{\crcr\noalign{\penalty\interdisplaylinepenalty
+    \vskip0.5\cspskip}} 
+\def\innerAlso{\crcr\noalign{\penalty\interdisplaylinepenalty
+    \vskip\cspskip}} 
+
+\def\outeralso{\@cspskip\cspskip}
+\def\outerAlso{\@cspskip{2\cspskip}}%
+
+\def\also{\plainAlso}
+\def\Also{\plainAlso}
+
+\def\@csplign{\tabskip\z@skip\everycr{}} 
+
+\def\csp{\@csp\halign to\linewidth\bgroup%
+  {\color{CSPColor}\strut$\@csplign##$}\hfil
+  \tabskip=0pt plus1fil\cr}
+\def\endcsp{\crcr\egroup$$\global\@ignoretrue}
+
+\def\barcsp{%
+  \def\also{\outeralso}\def\Also{outerAlso}%
+  \color{CSPBoxColor}%
+  \@csp\offinterlineskip\halign to\linewidth\bgroup
+  \strut \vrule width\csprulewidth\cspdisplayindent%
+  {\color{CSPColor}$\@csplign##$}\hfil
+  \tabskip=0pt plus1fil\cr} 
+\def\endbarcsp{\crcr\egroup$$\global\@ignoretrue}
+
+\def\@cspleavevmode{\if@inlabel \indent
+  \else\if@noskipsec \indent
+  \else\if@nobreak \global\@nobreakfalse
+  \everypar={}\abovedisplayskip=0pt\fi
+  {\parskip=0pt\noindent}\fi\fi}
+
+\def\block{\@ifnextchar[{\@block}{\@block[t]}}
+\def\@block[#1]{\array[#1]{@{}l@{}}}
+\let\endblock=\endarray
+
+% -- declarations ------------------------------------------------------
+
+\def\declarationname{}
+
+\def\innerdeclarationlabel{\declarationname\cr\innerjot \hskip\csptab}
+\def\innerdeclaration{%
+  \def\also{\innerAlso}\def\Also{\innerAlso}%
+  \block\innerdeclarationlabel\block}
+\def\endinnerdeclaration{\endblock\endblock}
+
+\def\outerdeclarationlabel{\global\advance\cspindentdepth
+  by 1\declarationname\cr\@cspskip\@cspjot}
+
+\def\outerdeclaration{%
+  \@ifnextchar[{\boxdeclaration}{\linedeclaration}}
+\def\boxdeclaration[#1]{%
+  \def\endouterdeclaration{\global\advance\cspindentdepth
+    by -1\@cspskip\@cspjot\@cspline\endbarcsp}%
+  \@cspnarrow\barcsp%
+  \omit\csp@topline{$\strut#1$}\cr\@cspskip\@cspjot\outerdeclarationlabel}
+\def\linedeclaration{%
+  \def\endouterdeclaration{\global\advance\cspindentdepth
+  by -1\@cspskip\@cspjot\endbarcsp}
+  \barcsp\@cspskip\@cspjot\outerdeclarationlabel}
+
+% -- called by @declaration
+
+\if@color@
+  \def\@declaration@font{\color{MetaColor}\mathrm}
+\else
+  \def\@declaration@font{\mathsf}
+\fi
+
+\def\@declare#1{\mathop{{\@declaration@font{#1}~}}}
+
+\def\@declaration#1{%
+  \def\declarationname{{\@declaration@font{#1}}}%
+  \@ifnextchar[{\opt@dec}{\plain@dec}}
+
+\def\plain@dec{%
+  \if@in@csp@display@
+  \def\finish@dec{\endinnerdeclaration}%
+  \innerdeclaration
+  \else 
+  \def\finish@dec{\endouterdeclaration}%
+  \outerdeclaration
+  \fi}
+
+\def\opt@dec[#1]{%
+  \if@in@csp@display@
+  \def\finish@dec{\endinnerdeclaration}%
+  \innerdeclaration
+  \else 
+  \def\finish@dec{\endouterdeclaration}%
+  \outerdeclaration[#1]%
+  \fi}
+
+\def\end@declaration{\finish@dec}
+
+\def\@blank@declaration#1{%
+  \@ifnextchar[{\blank@opt@dec}{\blank@plain@dec}}
+
+\def\blank@plain@dec{%
+  \if@in@csp@display@
+  \def\innerdeclarationlabel{}%
+  \def\finish@dec{\endinnerdeclaration}%
+  \innerdeclaration
+  \else 
+  \def\outerdeclarationlabel{}%
+  \def\finish@dec{\global\advance\cspindentdepth
+    by 1\endouterdeclaration}%
+  \outerdeclaration
+  \fi}
+
+\def\blank@opt@dec[#1]{%
+  \if@in@csp@display@
+  \def\innerdeclarationlabel{}%
+  \def\finish@dec{\endinnerdeclaration}%
+  \innerdeclaration
+  \else 
+  \def\outerdeclarationlabel{}%
+  \def\finish@dec{\global\advance\cspindentdepth
+    by 1\endouterdeclaration}%
+  \outerdeclaration[#1]%
+  \fi}
+
+\def\newdeclaration#1#2#3{%
+  \global\@namedef{#1}{\@declaration{#3}}%
+  \global\@namedef{end#1}{\end@declaration}%
+  \global\@namedef{#2}{\@declare{#3}}}
+
+\def\newblankdeclaration#1#2#3{%
+  \global\@namedef{#1}{\@blank@declaration{#3}}%
+  \global\@namedef{end#1}{\end@declaration}%
+  \global\@namedef{#2}{}}
+
+\newblankdeclaration{declaration}{Declaration}{declare}
+
+% --
+
+\newdeclaration{class}{Class}{class}
+\newdeclaration{object}{Object}{object}
+\newdeclaration{attribute}{Attribute}{attribute}
+\newdeclaration{method}{Method}{method}
+\newdeclaration{channel}{Channel}{channel}
+\newdeclaration{datatype}{Datatype}{datatype}
+\newdeclaration{external}{External}{external}
+\newdeclaration{nametype}{Nametype}{nametype}
+\newdeclaration{subtype}{Subtype}{subtype}
+\newdeclaration{transparent}{Transparent}{transparent}
+\newdeclaration{variable}{Variable}{variable}
+\newdeclaration{assert}{Assert}{assert}
+\newdeclaration{evaluate}{Evaluate}{evaluate}
+
+\def\odot{\mathbin{.}}
+\def\pdot{\mathbin{.}}
+
+% -- let and within are different --------------------------------------
+
+\def\Let{\@declare{let}}
+\def\Within{\mathrel{\@declare{within}}}
+
+% -- drop the Process and Function keywords unless `keywords' set ------
+
+\if@keywords@ 
+  \newdeclaration{function}{Function}{function}
+  \newdeclaration{process}{Process}{process}
+  \newdeclaration{alphabet}{Alphabet}{alphabet}
+\else
+  \newblankdeclaration{function}{Function}{function}
+  \newblankdeclaration{process}{Process}{process}
+  \newblankdeclaration{alphabet}{Alphabet}{alphabet}
+\fi
+
+\let\ignore\relax
+\let\endignore\relax
+
+% -- semantics ---------------------------------------------------------
+
+\def\newsemantics#1#2{%
+  \@namedef{#1}{#2\@ifnextchar[{\@semapp}{\relax}}}
+\def\@semapp[#1]{\,\ldbrack\: #1 \:\rdbrack}
+
+\newsemantics{traces}{traces}
+\newsemantics{divergences}{divergences}
+\newsemantics{failures}{failures}
+
+% -- subscript parallel ------------------------------------------------
+
+% copy and paste this definition into your own package or style file
+% if you wish to have subscripted arguments to the parallel operator:
+
+%  \def\@@parallel[#1][#2]{%
+%    \mathrel{%
+%      {\vphantom\parallel@sym}_{#1}{\parallel@sym}_{#2}}}
+  
+
+% -- csp.sty -----------------------------------------------------------
+
+\endinput
